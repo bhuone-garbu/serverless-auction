@@ -29,11 +29,25 @@ functions:
     events:
       - http:
           method: POST
-          path: /auction
+          path: /auctions
     # package:
     #   exclude:
     #     - node_modules/**
     #     - package*json
+
+  getAuctions:
+    handler: src/handlers/getAuctions.handler
+    events:
+      - http:
+          method: GET
+          path: /auctions
+
+  getAuction:
+    handler: src/handlers/getAuction.handler
+    events:
+      - http:
+          method: GET
+          path: /auctions/{id}
 
 custom:
   AuctionsTable:

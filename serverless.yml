@@ -13,23 +13,16 @@ provider:
   memorySize: 256
   stage: ${opt:stage, 'dev'}
   region: eu-west-2
+  environment:
+    AUCTIONS_TABLE_NAME: ${self:custom.AuctionsTable.name}
+  iamRoleStatements:
+    - ${file(iam/auctions-table-iam.yml):AuctionsTableIAM}
 
 resources:
   # we are now in AWS world
   Resources:
-    AuctionsTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: AuctionsTable
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
+    AuctionsTable: ${file(resources/auctions-table.yml):AuctionsTable}
           
-
 functions:
   createAuction:
     handler: src/handlers/createAuction.handler
@@ -43,5 +36,8 @@ functions:
     #     - package*json
 
 custom:
+  AuctionsTable:
+    name: !Ref AuctionsTable
+    arn: !GetAtt AuctionsTable.Arn
   bundle:
     linting: false

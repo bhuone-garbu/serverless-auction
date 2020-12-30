@@ -1,8 +1,5 @@
 import AWS from 'aws-sdk';
-import middy from '@middy/core';
-import httpJsonBodyParser from '@middy/http-json-body-parser';
-import httpEventNormalizer from '@middy/http-event-normalizer';
-import httpEventHandler from '@middy/http-error-handler';
+import commonMiddleware from '../../lib/common-middleware';
 import createError from 'http-errors';
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -27,7 +24,4 @@ async function getAuctions(event, context) {
   };
 }
 
-exports.handler = middy(getAuctions)
-  .use(httpJsonBodyParser())
-  .use(httpEventNormalizer())
-  .use(httpEventHandler());
+exports.handler = commonMiddleware(getAuctions);

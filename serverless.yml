@@ -32,6 +32,8 @@ functions:
       - http:
           method: POST
           path: /auctions
+          authorizer: ${self:custom.authorizer}
+          
     # package:
     #   exclude:
     #     - node_modules/**
@@ -43,6 +45,7 @@ functions:
       - http:
           method: GET
           path: /auctions
+          authorizer: ${self:custom.authorizer}
 
   getAuction:
     handler: src/handlers/getAuction.handler
@@ -50,6 +53,7 @@ functions:
       - http:
           method: GET
           path: /auctions/{id}
+          authorizer: ${self:custom.authorizer}
 
   placeBid:
     handler: src/handlers/placeBid.handler
@@ -57,6 +61,7 @@ functions:
       - http:
           method: PATCH
           path: /auctions/{id}/bid
+          authorizer: ${self:custom.authorizer}
 
   processAuctions:
     handler: src/handlers/processAuctions.handler
@@ -64,6 +69,8 @@ functions:
     #   - schedule: rate(1 minute)
 
 custom:
+  # template arn of lambda - arn:aws:lambda:eu-west-2:MyAccountId:function:serverless-auth-dev-auth
+  authorizer: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:serverless-auth-${self:provider.stage}-auth
   AuctionsTable:
     name: !Ref AuctionsTable
     arn: !GetAtt AuctionsTable.Arn

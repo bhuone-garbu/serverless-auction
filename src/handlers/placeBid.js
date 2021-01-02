@@ -5,6 +5,7 @@ import validator from '@middy/validator';
 import placeBidSchema from '../lib/schemas/place-bid-schema';
 import commonMiddleware from '../lib/commonMiddleware';
 import { getAuctionById } from './getAuction';
+import cors from '@middy/http-cors';
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
@@ -64,6 +65,7 @@ async function placeBid(event, context) {
 }
 
 exports.handler = commonMiddleware(placeBid)
+  .use(cors())
   .use(validator({
     inputSchema: placeBidSchema
   }));

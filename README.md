@@ -7,6 +7,10 @@
 
 Finally, [install serverless](https://www.serverless.com/framework/docs/getting-started/).
 
+## Notes
+
+Uses and references the https://github.com/bhuone-garbu/serverless-auth service as a proof of concept for handling authentication.
+
 ## Deploying
 
 ```sh

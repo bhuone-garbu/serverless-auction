@@ -17,15 +17,20 @@ provider:
   region: eu-west-2
   environment:
     AUCTIONS_TABLE_NAME: ${self:custom.AuctionsTable.name}
+    AUCTIONS_BUCKET_NAME: ${self:custom.AuctionsBucket.name}
     MAIL_QUEUE_URL: ${self:custom.MailQueue.url}
   iamRoleStatements:
     - ${file(iam/auctions-table-iam.yml):AuctionsTableIAM}
     - ${file(iam/mail-queue-iam.yml):MailQueueIAM}
+    - ${file(iam/auctions-bucket-iam.yml):AuctionsBucketIAM}
 
 resources:
   # we are now in AWS world
   Resources:
     AuctionsTable: ${file(resources/auctions-table.yml):AuctionsTable}
+    AuctionsBucket: ${file(resources/auctions-bucket.yml):AuctionsBucket}
+    AuctionsBucketPolicy: ${file(resources/auctions-bucket.yml):AuctionsBucketPolicy}
+
           
 functions:
   createAuction:
@@ -65,6 +70,14 @@ functions:
           path: /auctions/{id}/bid
           authorizer: ${self:custom.authorizer}
 
+  uploadAuctionPicture:
+    handler: src/handlers/uploadAuctionPicture.handler
+    events:
+      - http:
+          method: PATCH
+          path: /auctions/{id}/picture
+          authorizer: ${self:custom.authorizer}
+
   processAuctions:
     handler: src/handlers/processAuctions.handler
     # events:
@@ -80,5 +93,7 @@ custom:
     # adding a cf (CloudFormation) dependency via stack name
     arn: ${cf:serverless-notification-${self:provider.stage}.MailQueueArn}
     url: ${cf:serverless-notification-${self:provider.stage}.MailQueueUrl}
+  AuctionsBucket:
+    name: auction-bucket-bg4-${self:provider.stage}
   bundle:
     linting: false

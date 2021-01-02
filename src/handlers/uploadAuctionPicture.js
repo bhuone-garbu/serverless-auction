@@ -6,9 +6,17 @@ import { getAuctionById } from './getAuction';
 import uploadPictureToS3 from '../lib/uploadPictureToS3';
 import setAuctionPicture from '../lib/setAuctionPicture';
 
+import uploadPictureSchema from '../lib/schemas/upload-picture-schema';
+import validator from '@middy/validator';
+
 async function uploadAuctionPicture(event) {
   const { id } = event.pathParameters;
+  const { email } = event.requestContext.authorizer;
   const auction = await getAuctionById(id);
+
+  if (email !== auction.seller) {
+    throw new createError.Forbidden('You are not the seller of this auction');
+  }
 
   // just for proof of concept - using base64
   const base64 = event.body.replace(/^data:image\/\w+;base64,/, '');
@@ -32,4 +40,7 @@ async function uploadAuctionPicture(event) {
 }
 
 export const handler = middy(uploadAuctionPicture)
-  .use(httpErrorHandler());
+  .use(httpErrorHandler())
+  .use(validator({
+    inputSchema: uploadPictureSchema
+  }));

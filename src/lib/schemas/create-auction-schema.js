@@ -6,6 +6,7 @@ const schema = {
       properties: {
         title: {
           type: 'string',
+          minLength: 1
         },
       },
       required: ['title'],
